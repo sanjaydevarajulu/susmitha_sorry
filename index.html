@@ -1,0 +1,62 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>For Susmitha 🌻</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Georgia,serif;color:#5b4618;background:linear-gradient(135deg,#fffdf0,#fff2a8,#fffaf0);min-height:100vh}
+.wrap{max-width:820px;margin:auto;padding:30px 18px 60px;position:relative;z-index:2}
+.card{background:rgba(255,255,255,.92);border:2px solid #ead16a;border-radius:30px;padding:34px 26px;margin:18px 0;box-shadow:0 18px 55px rgba(120,90,10,.14);text-align:center}
+.flower{font-size:64px}h1,h2{color:#b57900}h1{font-size:42px;margin:8px}p{font-size:18px;line-height:1.75}.letter{text-align:left;max-width:680px;margin:auto}
+.choice-row,.actions{display:flex;gap:15px;justify-content:center;flex-wrap:wrap;margin-top:24px}
+.choice,.send,.close{border-radius:999px;padding:14px 30px;font-size:19px;font-weight:bold;cursor:pointer;font-family:inherit}
+.choice{background:#fffdf3;border:2px solid #e2c64d;color:#755400}.choice.selected,.send{background:#d99b00;color:#fff;border:2px solid #d99b00}
+.close{border:0;background:#f5ebc7;color:#705719}.small{font-size:14px;opacity:.7}
+.status{display:none;margin:20px auto 0;padding:15px;border-radius:16px;background:#fff6d4}.status.show{display:block}
+.bg{position:fixed;font-size:48px;opacity:.22;pointer-events:none}.a{left:4%;top:8%}.b{right:5%;top:20%}.c{left:7%;bottom:10%}.d{right:8%;bottom:7%}
+.modal{display:none;position:fixed;inset:0;background:rgba(70,55,10,.5);z-index:10;align-items:center;justify-content:center;padding:18px}.modal.show{display:flex}
+.modalbox{width:min(94%,560px);background:#fffdf3;border:2px solid #e5c64d;border-radius:28px;padding:28px;box-shadow:0 25px 80px rgba(40,30,0,.3);text-align:center}
+textarea{width:100%;min-height:145px;resize:vertical;border:2px solid #e5cf68;border-radius:18px;padding:15px;font:17px Georgia,serif;outline:none}
+</style></head>
+<body>
+<div class="bg a">🌻</div><div class="bg b">🌻</div><div class="bg c">🌻</div><div class="bg d">🌻</div>
+<div class="wrap">
+<section class="card"><div class="flower">🌻</div><h1>For Susmitha ❤️</h1><p>I owe you a proper apology.</p>
+<div class="letter">
+<p>Susmitha, I know our date didn't turn out the way you expected, and I'm really sorry for that.</p>
+<p>The biggest mistake was mine. I took you out without properly planning the day, and I understand why that left you disappointed.</p>
+<p>You deserved more thought, effort and excitement from me. I should have planned something that made you feel special instead of just deciding to go out and hoping it would work.</p>
+<p>I can't change how that day went, but I can take responsibility for it. <strong>I'm genuinely sorry.</strong></p>
+<p>If you're willing, I'd really like the chance to make it right — properly this time, with an actual plan. 🌻</p>
+</div></section>
+<section class="card"><div class="flower" style="font-size:48px">💌</div><h2>Can you tell me honestly?</h2>
+<p>No pressure. I just want to know how you feel.</p>
+<div class="choice-row"><button class="choice" data-answer="YES ❤️">Yes ❤️</button><button class="choice" data-answer="NO 😔">No 😔</button></div>
+<div id="status" class="status"></div><p class="small">Your answer and note will be sent privately to me.</p></section>
+</div>
+<div id="modal" class="modal"><div class="modalbox"><div class="flower" style="font-size:50px">🌻</div>
+<h2 id="mtitle">Tell me honestly</h2><p id="mtext">Before you send your answer, is there anything you want me to know?</p>
+<textarea id="note" maxlength="1000" placeholder="Write what you're feeling..."></textarea>
+<div class="actions"><button class="close" id="close">Maybe later</button><button class="send" id="send">Send ❤️</button></div></div></div>
+<script>
+const URL="https://axmjfouokciakybyfivl.supabase.co", KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4bWpmb3Vva2NpYWt5YnlmaXZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcwNjQ1MDcsImV4cCI6MjEwMjY0MDUwN30.p-NQBsNPRoyffWkMsJzCzFbdQGRWYqgt7MfhF9cN4Jc", FN=URL+"/functions/v1/send-pattu-sms";
+let answer=null;
+const modal=document.getElementById("modal"),note=document.getElementById("note"),status=document.getElementById("status");
+document.querySelectorAll(".choice").forEach(b=>b.onclick=()=>{
+ document.querySelectorAll(".choice").forEach(x=>x.classList.remove("selected"));b.classList.add("selected");answer=b.dataset.answer;
+ const yes=answer.startsWith("YES");document.getElementById("mtitle").textContent=yes?"Aww, Susmitha ❤️":"It's okay 😔";
+ document.getElementById("mtext").textContent=yes?"Thank you. Is there anything you want to tell me?":"I understand. Please tell me honestly what you're feeling.";
+ note.value="";modal.classList.add("show");setTimeout(()=>note.focus(),100);
+});
+document.getElementById("close").onclick=()=>modal.classList.remove("show");
+document.getElementById("send").onclick=async()=>{
+ const msg=note.value.trim();if(!msg){alert("Please write a little note. I really want to hear what you're feeling. ❤️");return}
+ const btn=document.getElementById("send");btn.disabled=true;btn.textContent="Sending...";
+ try{
+  const r=await fetch(URL+"/rest/v1/apology_responses",{method:"POST",headers:{apikey:KEY,Authorization:"Bearer "+KEY,"Content-Type":"application/json",Prefer:"return=minimal"},body:JSON.stringify({answer:answer,message:msg})});
+  if(!r.ok)throw new Error("Could not save response: "+await r.text());
+  const s=await fetch(FN,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({record:{answer:answer,message:msg}})});
+  if(!s.ok)throw new Error("Response saved, but SMS failed: "+await s.text());
+  modal.classList.remove("show");status.textContent="Your response has been sent. ❤️ Thank you for being honest with me.";status.classList.add("show");
+ }catch(e){modal.classList.remove("show");status.textContent=e.message;status.classList.add("show")}
+ finally{btn.disabled=false;btn.textContent="Send ❤️"}
+};
+</script></body></html>
